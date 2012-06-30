@@ -2,7 +2,7 @@
 # System information
 import psutil
 import datetime
-
+import time
 import airspeed
 
 def RecordState():
@@ -10,13 +10,13 @@ def RecordState():
 	now = datetime.datetime.now()
 
 	# Open log file
-	log = open('out.ministat', 'a')
+	log = open('cpu.ministat', 'a')
 
 	# Write our info.
-	log.write('['+str(now.microsecond)+','+str(psutil.cpu_percent(interval=1))+'],\n')
+	log.write(str(now.microsecond) + ',' + str(psutil.cpu_percent(interval=1))+'\n')
 	log.close
 
-	def GenerateHTML(cpu, memory):
+def GenerateHTML(cpu, memory):
 	t = airspeed.Template("""
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 	<html>
@@ -27,10 +27,19 @@ def RecordState():
 	    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../excanvas.min.js"></script><![endif]-->
 	    <script language="javascript" type="text/javascript" src="jquery.js"></script>
 	    <script language="javascript" type="text/javascript" src="jquery.flot.js"></script>
+
+		<script type="text/JavaScript">
+		<!--
+		function timedRefresh(timeoutPeriod) {
+			setTimeout("location.reload(true);",timeoutPeriod);
+		}
+		//   -->
+		</script>
+
 	 </head>
-	    <body>
-	    <h1>Memory</h1>
-	    <div id="memory" style="width:600px;height:300px;"></div>
+	    <body onload="JavaScript:timedRefresh(5000);">
+	    <!--<h1>Memory</h1>
+	    <div id="memory" style="width:600px;height:300px;"></div>--!>
 	    <h1>CPU</h1>
 	    <div id="cpu" style="width:600px;height:150px;"></div>
 
@@ -48,17 +57,15 @@ def RecordState():
 	#end
 	]; 
 
-	    $.plot($("#cpu"), [cpu], { xaxis: { mode: "time" }, points: { show: true } });
+	    $.plot($("#cpu"), [cpu], { xaxis: { mode: "time" }, line: { show: true } });
 
-	    $.plot($("#memory"), [memory], { xaxis: { mode: "time" }, bars: { show: true } });
+	    $.plot($("#memory"), [memory], { xaxis: { mode: "time" }, line: { show: true } });
 	});
 	</script>
 
 	 </body>
 	</html>
 	""")
-	cpu = [{'datestamp': '969871', 'value': 1.6}, {'datestamp': '969871', 'value': 2.6},{'datestamp': '969871', 'value': 3.6} ]
-	memory = [{'datestamp': '969871', 'value': 34.6}, {'datestamp': '969871', 'value': 67.6},{'datestamp': '969871', 'value': 87.6} ]
 	#print t.merge(locals())
 
 	log = open('out.html', 'w')
@@ -68,14 +75,27 @@ def RecordState():
 
 def GetCPU():
 	# Read from the log file, turn the CSV into an assiative array and pass it to the GenerateHTML function.
+	print "Getting CPU informaion"
+
+	rtn = []
+	# Load in the CPU data.
+	for line in  open('cpu.ministat', 'r'):
+		data = line.split(',')
+		rtn.append({'datestamp': data[0], 'value': data[1]})
+
+	return rtn
+
 def GetMemory():
 	# Read from the log file, turn the CSV into an assiative array and pass it to the GenerateHTML function.
-	
-# [969871,1.6],
-# [540776,1.8],
-# [55344,1.1],
-# [566065,2.6],
-# [258297,2.1],
-# [649793,2.8],
-# [451371,1.2],
-# [80818,3.5]
+	print "Getting Memory information"
+	return [{'datestamp': '969871', 'value': 34.6}, {'datestamp': '969871', 'value': 67.6},{'datestamp': '969871', 'value': 87.6} ]
+
+
+# Main loop.
+while True:
+	# Get information.
+	RecordState()
+	# Sleep for 3s
+	time.sleep(3)
+	# Regenerate the HTML
+	GenerateHTML(GetCPU(), GetMemory())
