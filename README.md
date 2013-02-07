@@ -1,7 +1,8 @@
 Micro Stats
 ===========
 
-A lightweight system resource monitor service, suitable for hardware such as the [Raspberry Pi](http://www.raspberrypi.org/). Which displays easy to read graphs over a network connection. 
+A lightweight system resource monitor service, which displays easy to read graphs over a network connection.
+Suitable for low powered hardware such as the [Raspberry Pi](http://www.raspberrypi.org/)
 
 Status
 -----
@@ -13,10 +14,7 @@ This is a work in progress, python is being used to prototype a random idea.
 - psutil 	 - http://code.google.com/p/psutil/
 
 ### Random Links
-http://serverfault.com/questions/354783/lightweight-plug-and-play-machine-resource-monitoring-utility
-
-http://htop.svn.sourceforge.net/viewvc/htop/trunk/
-http://magnetikonline.com/sysstatgraph/
-http://dev.sanityinc.com/airspeed/
-
-
+- http://serverfault.com/questions/354783/lightweight-plug-and-play-machine-resource-monitoring-utility
+- http://htop.svn.sourceforge.net/viewvc/htop/trunk/
+- http://magnetikonline.com/sysstatgraph/
+- http://dev.sanityinc.com/airspeed/
